@@ -4,6 +4,9 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "resolvePackageJsonExports": false,
-    "declaration": false
+    "declaration": false,
+    "paths": {
+      "#app/*": ["./src/*.ts"]
+    }
   }
 }
