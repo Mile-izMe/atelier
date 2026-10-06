@@ -1,0 +1,53 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', '.github/workflows/backend.yml', '.node-version', '.gitattributes', 'atelier-containers/**']
+  pull_request:
+    paths: ['backend/**', '.github/workflows/backend.yml', '.node-version', '.gitattributes', 'atelier-containers/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Backend lint, types and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      # Contract emission and current tests do not connect to a database.
+      DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/atelier_ci
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          package_json_file: backend/package.json
+          run_install: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Validate Prisma contract
+        run: pnpm run contract:emit
+      - name: Lint without modifying files
+        run: pnpm run lint:check
+      - name: Type check
+        run: pnpm run typecheck
+      - name: Unit tests
+        run: pnpm test --runInBand
+      - name: HTTP end-to-end tests
+        run: pnpm run test:e2e --runInBand

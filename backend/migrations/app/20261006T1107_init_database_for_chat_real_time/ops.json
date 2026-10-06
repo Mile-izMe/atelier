@@ -1,0 +1,1189 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.channels",
+    "label": "Create table \"channels\"",
+    "summary": "Creates table \"channels\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "channels"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"channels\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"channels\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"channels\"",
+        "sql": "CREATE TABLE \"public\".\"channels\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"created_by\" text,\n  \"description\" text,\n  \"guildId\" uuid NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"name\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"updated_by\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"channels\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"channels\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.conversation_members",
+    "label": "Create table \"conversation_members\"",
+    "summary": "Creates table \"conversation_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "conversation_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"conversation_members\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversation_members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"conversation_members\"",
+        "sql": "CREATE TABLE \"public\".\"conversation_members\" (\n  \"conversationId\" uuid NOT NULL,\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"userId\", \"conversationId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"conversation_members\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversation_members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.conversations",
+    "label": "Create table \"conversations\"",
+    "summary": "Creates table \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"conversations\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"conversations\"",
+        "sql": "CREATE TABLE \"public\".\"conversations\" (\n  \"channel_id\" uuid,\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"created_by\" text,\n  \"direct_key\" text,\n  \"id\" uuid NOT NULL,\n  \"type\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"updated_by\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"conversations_type_check_a53cf064\" CHECK (\"type\" IN ('CHANNEL', 'DIRECT', 'AI'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"conversations\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.guild_members",
+    "label": "Create table \"guild_members\"",
+    "summary": "Creates table \"guild_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "guild_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"guild_members\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guild_members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"guild_members\"",
+        "sql": "CREATE TABLE \"public\".\"guild_members\" (\n  \"guildId\" uuid NOT NULL,\n  \"joined_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"userId\" uuid NOT NULL,\n  PRIMARY KEY (\"userId\", \"guildId\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"guild_members\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guild_members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.guilds",
+    "label": "Create table \"guilds\"",
+    "summary": "Creates table \"guilds\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "guilds"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"guilds\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guilds\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"guilds\"",
+        "sql": "CREATE TABLE \"public\".\"guilds\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"created_by\" text,\n  \"description\" text,\n  \"id\" uuid NOT NULL,\n  \"name\" text NOT NULL,\n  \"ownerId\" uuid NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"updated_by\" text,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"guilds\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guilds\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.messages",
+    "label": "Create table \"messages\"",
+    "summary": "Creates table \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"messages\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"messages\"",
+        "sql": "CREATE TABLE \"public\".\"messages\" (\n  \"author_id\" uuid,\n  \"client_message_id\" uuid,\n  \"content\" text NOT NULL,\n  \"conversation_id\" uuid NOT NULL,\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"created_by\" text,\n  \"edited_at\" timestamptz,\n  \"id\" uuid NOT NULL,\n  \"revoke_at\" timestamptz,\n  \"sender_type\" text NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"updated_by\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"messages_sender_type_check_33566804\" CHECK (\"sender_type\" IN ('USER', 'ASSISTANT'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"messages\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.users",
+    "label": "Create table \"users\"",
+    "summary": "Creates table \"users\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"users\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"users\"",
+        "sql": "CREATE TABLE \"public\".\"users\" (\n  \"created_at\" timestamptz DEFAULT (now()) NOT NULL,\n  \"created_by\" text,\n  \"deleted_at\" timestamptz,\n  \"email\" text NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"passwordHash\" text NOT NULL,\n  \"role\" text DEFAULT 'MEMBER' NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"updated_by\" text,\n  \"username\" text,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"users_role_check_49b83496\" CHECK (\"role\" IN ('MEMBER', 'ADMIN'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"users\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.conversations.conversations_channel_id_key",
+    "label": "Add unique constraint on \"conversations\" (channel_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "conversations_channel_id_key",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"conversations_channel_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_channel_id_key",
+          "public",
+          "\"public\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"conversations_channel_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"conversations\" ADD CONSTRAINT \"conversations_channel_id_key\" UNIQUE (\"channel_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"conversations_channel_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_channel_id_key",
+          "public",
+          "\"public\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.conversations.conversations_direct_key_key",
+    "label": "Add unique constraint on \"conversations\" (direct_key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "conversations_direct_key_key",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"conversations_direct_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_direct_key_key",
+          "public",
+          "\"public\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"conversations_direct_key_key\"",
+        "sql": "ALTER TABLE \"public\".\"conversations\" ADD CONSTRAINT \"conversations_direct_key_key\" UNIQUE (\"direct_key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"conversations_direct_key_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_direct_key_key",
+          "public",
+          "\"public\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.messages.messages_author_id_client_message_id_key",
+    "label": "Add unique constraint on \"messages\" (author_id, client_message_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "messages_author_id_client_message_id_key",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"messages_author_id_client_message_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_author_id_client_message_id_key",
+          "public",
+          "\"public\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"messages_author_id_client_message_id_key\"",
+        "sql": "ALTER TABLE \"public\".\"messages\" ADD CONSTRAINT \"messages_author_id_client_message_id_key\" UNIQUE (\"author_id\", \"client_message_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"messages_author_id_client_message_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_author_id_client_message_id_key",
+          "public",
+          "\"public\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_email_key",
+    "label": "Add unique constraint on \"users\" (email)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "users_email_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_email_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_email_key\"",
+        "sql": "ALTER TABLE \"public\".\"users\" ADD CONSTRAINT \"users_email_key\" UNIQUE (\"email\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_email_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_email_key",
+          "public",
+          "\"public\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.channels.channels_guildId_idx_b8c02cbb",
+    "label": "Create index \"channels_guildId_idx_b8c02cbb\" on \"channels\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "channels_guildId_idx_b8c02cbb",
+        "table": "channels"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"channels_guildId_idx_b8c02cbb\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"channels_guildId_idx_b8c02cbb\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"channels_guildId_idx_b8c02cbb\"",
+        "sql": "CREATE INDEX \"channels_guildId_idx_b8c02cbb\" ON \"public\".\"channels\" (\"guildId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"channels_guildId_idx_b8c02cbb\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"channels_guildId_idx_b8c02cbb\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.conversation_members.conversation_members_conversationId_idx_669215a6",
+    "label": "Create index \"conversation_members_conversationId_idx_669215a6\" on \"conversation_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "conversation_members_conversationId_idx_669215a6",
+        "table": "conversation_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"conversation_members_conversationId_idx_669215a6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversation_members_conversationId_idx_669215a6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"conversation_members_conversationId_idx_669215a6\"",
+        "sql": "CREATE INDEX \"conversation_members_conversationId_idx_669215a6\" ON \"public\".\"conversation_members\" (\"conversationId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"conversation_members_conversationId_idx_669215a6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversation_members_conversationId_idx_669215a6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.conversation_members.conversation_members_userId_idx_a489d58a",
+    "label": "Create index \"conversation_members_userId_idx_a489d58a\" on \"conversation_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "conversation_members_userId_idx_a489d58a",
+        "table": "conversation_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"conversation_members_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversation_members_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"conversation_members_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"conversation_members_userId_idx_a489d58a\" ON \"public\".\"conversation_members\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"conversation_members_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"conversation_members_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.guild_members.guild_members_guildId_idx_b8c02cbb",
+    "label": "Create index \"guild_members_guildId_idx_b8c02cbb\" on \"guild_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "guild_members_guildId_idx_b8c02cbb",
+        "table": "guild_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"guild_members_guildId_idx_b8c02cbb\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guild_members_guildId_idx_b8c02cbb\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"guild_members_guildId_idx_b8c02cbb\"",
+        "sql": "CREATE INDEX \"guild_members_guildId_idx_b8c02cbb\" ON \"public\".\"guild_members\" (\"guildId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"guild_members_guildId_idx_b8c02cbb\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guild_members_guildId_idx_b8c02cbb\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.guild_members.guild_members_userId_idx_a489d58a",
+    "label": "Create index \"guild_members_userId_idx_a489d58a\" on \"guild_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "guild_members_userId_idx_a489d58a",
+        "table": "guild_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"guild_members_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guild_members_userId_idx_a489d58a\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"guild_members_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"guild_members_userId_idx_a489d58a\" ON \"public\".\"guild_members\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"guild_members_userId_idx_a489d58a\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guild_members_userId_idx_a489d58a\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.guilds.guilds_ownerId_idx_e2d0c1ef",
+    "label": "Create index \"guilds_ownerId_idx_e2d0c1ef\" on \"guilds\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "guilds_ownerId_idx_e2d0c1ef",
+        "table": "guilds"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"guilds_ownerId_idx_e2d0c1ef\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guilds_ownerId_idx_e2d0c1ef\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"guilds_ownerId_idx_e2d0c1ef\"",
+        "sql": "CREATE INDEX \"guilds_ownerId_idx_e2d0c1ef\" ON \"public\".\"guilds\" (\"ownerId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"guilds_ownerId_idx_e2d0c1ef\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"guilds_ownerId_idx_e2d0c1ef\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.messages.messages_author_id_idx_f3862461",
+    "label": "Create index \"messages_author_id_idx_f3862461\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "messages_author_id_idx_f3862461",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"messages_author_id_idx_f3862461\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages_author_id_idx_f3862461\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"messages_author_id_idx_f3862461\"",
+        "sql": "CREATE INDEX \"messages_author_id_idx_f3862461\" ON \"public\".\"messages\" (\"author_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"messages_author_id_idx_f3862461\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages_author_id_idx_f3862461\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.messages.messages_conversation_id_created_at_id_idx_3c009cf9",
+    "label": "Create index \"messages_conversation_id_created_at_id_idx_3c009cf9\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "messages_conversation_id_created_at_id_idx_3c009cf9",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"messages_conversation_id_created_at_id_idx_3c009cf9\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages_conversation_id_created_at_id_idx_3c009cf9\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"messages_conversation_id_created_at_id_idx_3c009cf9\"",
+        "sql": "CREATE INDEX \"messages_conversation_id_created_at_id_idx_3c009cf9\" ON \"public\".\"messages\" (\"conversation_id\", \"created_at\", \"id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"messages_conversation_id_created_at_id_idx_3c009cf9\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages_conversation_id_created_at_id_idx_3c009cf9\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.messages.messages_conversation_id_idx_0c3639df",
+    "label": "Create index \"messages_conversation_id_idx_0c3639df\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "messages_conversation_id_idx_0c3639df",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"messages_conversation_id_idx_0c3639df\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages_conversation_id_idx_0c3639df\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"messages_conversation_id_idx_0c3639df\"",
+        "sql": "CREATE INDEX \"messages_conversation_id_idx_0c3639df\" ON \"public\".\"messages\" (\"conversation_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"messages_conversation_id_idx_0c3639df\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"messages_conversation_id_idx_0c3639df\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.channels.channels_guildId_fkey",
+    "label": "Add foreign key \"channels_guildId_fkey\" on \"channels\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "channels_guildId_fkey",
+        "table": "channels"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"channels_guildId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "channels_guildId_fkey",
+          "public",
+          "\"public\".\"channels\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"channels_guildId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"channels\"\nADD CONSTRAINT \"channels_guildId_fkey\"\nFOREIGN KEY (\"guildId\")\nREFERENCES \"public\".\"guilds\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"channels_guildId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "channels_guildId_fkey",
+          "public",
+          "\"public\".\"channels\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.conversation_members.conversation_members_userId_fkey",
+    "label": "Add foreign key \"conversation_members_userId_fkey\" on \"conversation_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "conversation_members_userId_fkey",
+        "table": "conversation_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"conversation_members_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversation_members_userId_fkey",
+          "public",
+          "\"public\".\"conversation_members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"conversation_members_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"conversation_members\"\nADD CONSTRAINT \"conversation_members_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"conversation_members_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversation_members_userId_fkey",
+          "public",
+          "\"public\".\"conversation_members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.conversation_members.conversation_members_conversationId_fkey",
+    "label": "Add foreign key \"conversation_members_conversationId_fkey\" on \"conversation_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "conversation_members_conversationId_fkey",
+        "table": "conversation_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"conversation_members_conversationId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversation_members_conversationId_fkey",
+          "public",
+          "\"public\".\"conversation_members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"conversation_members_conversationId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"conversation_members\"\nADD CONSTRAINT \"conversation_members_conversationId_fkey\"\nFOREIGN KEY (\"conversationId\")\nREFERENCES \"public\".\"conversations\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"conversation_members_conversationId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversation_members_conversationId_fkey",
+          "public",
+          "\"public\".\"conversation_members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.conversations.conversations_channel_id_fkey",
+    "label": "Add foreign key \"conversations_channel_id_fkey\" on \"conversations\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "conversations_channel_id_fkey",
+        "table": "conversations"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"conversations_channel_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_channel_id_fkey",
+          "public",
+          "\"public\".\"conversations\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"conversations_channel_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"conversations\"\nADD CONSTRAINT \"conversations_channel_id_fkey\"\nFOREIGN KEY (\"channel_id\")\nREFERENCES \"public\".\"channels\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"conversations_channel_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "conversations_channel_id_fkey",
+          "public",
+          "\"public\".\"conversations\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.guild_members.guild_members_userId_fkey",
+    "label": "Add foreign key \"guild_members_userId_fkey\" on \"guild_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "guild_members_userId_fkey",
+        "table": "guild_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"guild_members_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "guild_members_userId_fkey",
+          "public",
+          "\"public\".\"guild_members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"guild_members_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"guild_members\"\nADD CONSTRAINT \"guild_members_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"guild_members_userId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "guild_members_userId_fkey",
+          "public",
+          "\"public\".\"guild_members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.guild_members.guild_members_guildId_fkey",
+    "label": "Add foreign key \"guild_members_guildId_fkey\" on \"guild_members\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "guild_members_guildId_fkey",
+        "table": "guild_members"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"guild_members_guildId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "guild_members_guildId_fkey",
+          "public",
+          "\"public\".\"guild_members\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"guild_members_guildId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"guild_members\"\nADD CONSTRAINT \"guild_members_guildId_fkey\"\nFOREIGN KEY (\"guildId\")\nREFERENCES \"public\".\"guilds\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"guild_members_guildId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "guild_members_guildId_fkey",
+          "public",
+          "\"public\".\"guild_members\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.guilds.guilds_ownerId_fkey",
+    "label": "Add foreign key \"guilds_ownerId_fkey\" on \"guilds\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "guilds_ownerId_fkey",
+        "table": "guilds"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"guilds_ownerId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "guilds_ownerId_fkey",
+          "public",
+          "\"public\".\"guilds\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"guilds_ownerId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"guilds\"\nADD CONSTRAINT \"guilds_ownerId_fkey\"\nFOREIGN KEY (\"ownerId\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"guilds_ownerId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "guilds_ownerId_fkey",
+          "public",
+          "\"public\".\"guilds\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.messages.messages_author_id_fkey",
+    "label": "Add foreign key \"messages_author_id_fkey\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "messages_author_id_fkey",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"messages_author_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_author_id_fkey",
+          "public",
+          "\"public\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"messages_author_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"messages\"\nADD CONSTRAINT \"messages_author_id_fkey\"\nFOREIGN KEY (\"author_id\")\nREFERENCES \"public\".\"users\" (\"id\")\nON DELETE RESTRICT"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"messages_author_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_author_id_fkey",
+          "public",
+          "\"public\".\"messages\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.messages.messages_conversation_id_fkey",
+    "label": "Add foreign key \"messages_conversation_id_fkey\" on \"messages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "messages_conversation_id_fkey",
+        "table": "messages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"messages_conversation_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_conversation_id_fkey",
+          "public",
+          "\"public\".\"messages\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"messages_conversation_id_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"messages\"\nADD CONSTRAINT \"messages_conversation_id_fkey\"\nFOREIGN KEY (\"conversation_id\")\nREFERENCES \"public\".\"conversations\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"messages_conversation_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "messages_conversation_id_fkey",
+          "public",
+          "\"public\".\"messages\""
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,26 @@
+# Dependencies and build output from both applications
+node_modules/
+.next/
+dist/
+build/
+out/
+coverage/
+*.tsbuildinfo
+*.log
+
+# Local credentials; only sanitized examples belong in Git
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Preserved Git metadata from the two original repositories
+/.git-backups/
+
+# Local tools and database volumes
+.DS_Store
+Thumbs.db
+.idea/
+postgres_data/
+pgdata/

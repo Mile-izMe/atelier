@@ -1,0 +1,150 @@
+// use prisma-8
+
+enum UserRole {
+  @@type("pg/text@1")
+  MEMBER
+  ADMIN
+}
+
+enum ConversationType {
+  @@type("pg/text@1")
+  CHANNEL
+  DIRECT
+  AI
+}
+
+enum MessageSenderType {
+  @@type("pg/text@1")
+  USER
+  ASSISTANT
+}
+
+model User {
+  id            Uuid      @id @default(uuid())
+  role          UserRole  @default(MEMBER)
+  email         String    @unique
+  passwordHash  String   
+  username      String?
+
+  createdAt     TimestamptzString @default(now()) @map("created_at")
+  createdBy     String? @map("created_by")
+  updatedAt     temporal.updatedAtString() @map("updated_at")
+  updatedBy     String? @map("updated_by")
+  deletedAt     TimestamptzString? @map("deleted_at")
+
+  guildOwner          Guild[]
+  guildMembers        GuildMember[]
+  conversationMembers ConversationMember[]
+  messages            Message[]
+
+
+  @@map("users")
+}
+
+model GuildMember {
+  userId    Uuid
+  guildId   Uuid
+  joinedAt  TimestamptzString @default(now()) @map("joined_at")
+
+  @@id([userId, guildId])
+  @@index([guildId])
+  @@map("guild_members")
+
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guild     Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+}
+
+model Guild {
+  id           Uuid      @id @default(uuid())
+  ownerId      Uuid
+  name         String
+  description  String?
+
+  createdAt     TimestamptzString @default(now()) @map("created_at")
+  createdBy     String? @map("created_by")
+  updatedAt     temporal.updatedAtString() @map("updated_at")
+  updatedBy     String? @map("updated_by")
+
+  guildMembers GuildMember[]
+  channels     Channel[]
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+
+  @@index([ownerId])
+  @@map("guilds")
+}
+
+model Conversation {
+  id          Uuid      @id @default(uuid())
+  channelId   Uuid?     @unique @map("channel_id")
+  directKey   String?   @unique @map("direct_key")
+  type        ConversationType
+
+  createdAt   TimestamptzString @default(now()) @map("created_at")
+  createdBy   String? @map("created_by")
+  updatedAt   temporal.updatedAtString() @map("updated_at")
+  updatedBy   String? @map("updated_by")
+
+  messages    Message[]
+  members     ConversationMember[]
+  channel     Channel?  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@map("conversations")
+}
+
+model ConversationMember {
+  userId           Uuid
+  conversationId   Uuid
+  createdAt        TimestamptzString @default(now()) @map("created_at")
+
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversation     Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, conversationId])
+  @@index([conversationId])
+  @@map("conversation_members")
+}
+
+
+model Channel {
+  id           Uuid      @id @default(uuid())
+  guildId      Uuid
+  name         String
+  description  String?
+
+  conversation     Conversation?
+  guild            Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  createdAt     TimestamptzString @default(now()) @map("created_at")
+  createdBy     String? @map("created_by")
+  updatedAt     temporal.updatedAtString() @map("updated_at")
+  updatedBy     String? @map("updated_by")
+
+  @@index([guildId])
+  @@map("channels")
+}
+
+model Message {
+  id              Uuid      @id @default(uuid())
+  conversationId  Uuid      @map("conversation_id")
+  senderType      MessageSenderType @map("sender_type")
+  authorId        Uuid?     @map("author_id")
+  clientMessageId Uuid?     @map("client_message_id")
+  content         String
+  revokeAt        TimestamptzString?   @map("revoke_at")
+  editedAt        TimestamptzString?   @map("edited_at")
+  
+  createdAt   TimestamptzString @default(now()) @map("created_at")
+  createdBy   String? @map("created_by")
+  updatedAt   temporal.updatedAtString() @map("updated_at")
+  updatedBy   String? @map("updated_by")
+
+  author        User?         @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  conversation  Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  // One client-generated key per author. 
+  // A retry must use the same conversation/content.
+  @@unique([authorId, clientMessageId])
+  @@index([conversationId, createdAt, id])
+  @@map("messages")
+}
