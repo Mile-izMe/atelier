@@ -7,12 +7,14 @@
     "^.+\\.(t|j)s$": [
       "ts-jest",
       {
-        "tsconfig": "tsconfig.test.json"
+        "tsconfig": "tsconfig.test.json",
+        "useESM": true
       }
     ]
   },
   "moduleNameMapper": {
     "^#app/(.*)$": "<rootDir>/../src/$1",
     "^(\\.{1,2}/.*)\\.js$": "$1"
-  }
+  },
+  "extensionsToTreatAsEsm": [".ts"]
 }

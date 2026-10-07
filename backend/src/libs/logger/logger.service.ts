@@ -4,6 +4,7 @@ import { LogLevel } from '#app/libs/logger/enums/logger.enum';
 import { type LoggerOptions } from '#app/libs/logger/interface/logger.interface';
 import { LOGGER_OPTIONS } from './logger.module-definition.js';
 import { inspect } from 'node:util';
+import { getTraceId } from '../request-context/request-context.js';
 
 @Injectable()
 export class CustomLogger implements LoggerService {
@@ -15,6 +16,7 @@ export class CustomLogger implements LoggerService {
     const winstonLevel = this._options.logLevel;
 
     // the smaller the number, the more serious the problem
+    // all logs below the setup level is logged
     const WINSTON_LEVELS = {
       [LogLevel.FATAL]: 0,
       [LogLevel.ERROR]: 1,
@@ -65,6 +67,7 @@ export class CustomLogger implements LoggerService {
       level,
       message,
       context,
+      traceId: getTraceId(),
       stack: stack ?? (input instanceof Error ? input.stack : undefined),
     });
   }

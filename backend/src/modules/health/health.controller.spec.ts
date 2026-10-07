@@ -1,18 +1,25 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { jest } from '@jest/globals';
+import { Test } from '@nestjs/testing';
+import { CustomLogger } from '#app/libs/logger/logger.service';
 import { HealthController } from './health.controller.js';
 
 describe('HealthController', () => {
-  let controller: HealthController;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+  it('returns liveness status and logs the check', async () => {
+    const logger = { debug: jest.fn() };
+    const module = await Test.createTestingModule({
       controllers: [HealthController],
+      providers: [{ provide: CustomLogger, useValue: logger }],
     }).compile();
 
-    controller = module.get<HealthController>(HealthController);
-  });
-
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
+    try {
+      const controller = module.get(HealthController);
+      expect(controller.live()).toEqual({ status: 'ok' });
+      expect(logger.debug).toHaveBeenCalledWith(
+        'Liveness check passed',
+        HealthController.name,
+      );
+    } finally {
+      await module.close();
+    }
   });
 });

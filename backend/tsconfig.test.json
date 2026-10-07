@@ -1,9 +1,6 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "Node",
-    "resolvePackageJsonExports": false,
     "declaration": false,
     "paths": {
       "#app/*": ["./src/*.ts"]

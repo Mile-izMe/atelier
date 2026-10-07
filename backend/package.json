@@ -14,11 +14,11 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "test:cov": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+    "test:debug": "node --inspect-brk --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "test:e2e": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config ./test/jest-e2e.json",
     "contract:emit": "prisma contract emit",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings=0",
     "typecheck": "tsc --noEmit --incremental false"
@@ -33,16 +33,23 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-socket.io": "^11.2.7",
+    "@nestjs/swagger": "^12.0.2",
     "@nestjs/terminus": "^12.1.0",
+    "@nestjs/websockets": "^11.2.7",
     "@prisma/orm-postgres": "8.0.0-rc.14",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "dotenv": "^18.0.5",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "socket.io": "^4.8.4",
     "winston": "^3.19.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
+    "@jest/globals": "30.5.2",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
@@ -79,7 +86,8 @@
       "^.+\\.(t|j)s$": [
         "ts-jest",
         {
-          "tsconfig": "tsconfig.test.json"
+          "tsconfig": "tsconfig.test.json",
+          "useESM": true
         }
       ]
     },
@@ -91,7 +99,10 @@
     "moduleNameMapper": {
       "^#app/(.*)$": "<rootDir>/$1",
       "^(\\.{1,2}/.*)\\.js$": "$1"
-    }
+    },
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ]
   },
   "packageManager": "pnpm@10.21.0"
 }
