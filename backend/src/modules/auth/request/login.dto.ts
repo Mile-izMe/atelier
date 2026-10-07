@@ -1,19 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class LoginRequestDto {
-  @ApiProperty({
-    example: 'alice@gmail.com',
-    description: 'email',
-  })
+  @ApiProperty({ example: 'alice@example.com', maxLength: 254 })
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsEmail()
-  @IsNotEmpty()
+  @MaxLength(254)
   email!: string;
 
-  @ApiProperty({
-    example: 'correct horse battery staple',
-  })
+  @ApiProperty({ format: 'password', maxLength: 128 })
   @IsString()
   @IsNotEmpty()
+  @MaxLength(128)
   password!: string;
 }

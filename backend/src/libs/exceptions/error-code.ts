@@ -7,6 +7,11 @@ export type ErrorCodeProps = {
 };
 
 export const ErrorCode = {
+  INVALID_CREDENTIALS: {
+    status: HttpStatus.UNAUTHORIZED,
+    code: 'AUTH-401',
+    defaultMessage: 'Email or password is incorrect',
+  },
   EMAIL_ALREADY_EXISTS: {
     status: HttpStatus.CONFLICT,
     code: 'AUTH-409',

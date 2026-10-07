@@ -1,4 +1,6 @@
 import { jest } from '@jest/globals';
+import { PrismaService } from '#app/prisma/prisma.service';
+import { UserRepository } from '#app/modules/user/repository/user.repository';
 import {
   BadRequestException,
   Body,
@@ -125,6 +127,12 @@ describe('Global HTTP responses (e2e)', () => {
       imports: [AppModule],
       controllers: [ResponseTestController],
     })
+      .overrideProvider(PrismaService)
+      .useValue({})
+      .overrideProvider(UserRepository)
+      .useValue({})
+      .overrideProvider('JWT_MODULE_OPTIONS')
+      .useValue({ secret: 'test-only-signing-key-never-use-in-production' })
       .overrideProvider(CustomLogger)
       .useValue(logger)
       .compile();

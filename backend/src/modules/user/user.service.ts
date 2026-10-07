@@ -9,6 +9,10 @@ import { UserRepository } from './repository/user.repository.js';
 export class UsersService {
   constructor(private readonly users: UserRepository) {}
 
+  findByEmail(email: string): Promise<UserEntity | null> {
+    return this.users.findByEmail(email.trim().toLowerCase());
+  }
+
   async ensureEmailAvailable(email: string): Promise<void> {
     if (await this.users.findByEmail(email)) {
       throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);

@@ -1,4 +1,4 @@
-import type { Models } from '#app/prisma/contract';
+import type { Models } from '../../../prisma/contract.js';
 
 export type UserEntity = Pick<
   Models.public_User,
