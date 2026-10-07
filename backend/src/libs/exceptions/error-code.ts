@@ -7,6 +7,11 @@ export type ErrorCodeProps = {
 };
 
 export const ErrorCode = {
+  EMAIL_ALREADY_EXISTS: {
+    status: HttpStatus.CONFLICT,
+    code: 'AUTH-409',
+    defaultMessage: 'Email is already registered',
+  },
   // --- Common Error System ---
   INTERNAL_SERVER_ERROR: {
     status: HttpStatus.INTERNAL_SERVER_ERROR,
