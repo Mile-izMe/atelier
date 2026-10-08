@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { AuthGuard } from './guards/auth.guard.js';
+import { RolesGuard } from './guards/roles.guard.js';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '#app/modules/user/user.module';
 import { AuthController } from './auth.controller.js';
@@ -12,6 +14,7 @@ import { HashService } from './service/hash.service.js';
     JwtModule.registerAsync({ useFactory: createJwtOptions }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, HashService],
+  providers: [AuthService, HashService, AuthGuard, RolesGuard],
+  exports: [JwtModule, AuthGuard, RolesGuard],
 })
 export class AuthModule {}

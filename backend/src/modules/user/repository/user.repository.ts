@@ -19,6 +19,13 @@ export class UserRepository extends BaseRepository<
     super(prisma.orm.public.User);
   }
 
+  findActiveById(id: string): Promise<UserEntity | null> {
+    return this.prisma.orm.public.User.where({
+      id,
+      deletedAt: null,
+    }).first();
+  }
+
   findByEmail(email: string): Promise<UserEntity | null> {
     // Include soft-deleted users: the email is still reserved by the unique constraint.
     return this.prisma.orm.public.User.where({ email }).first();

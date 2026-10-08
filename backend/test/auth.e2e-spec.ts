@@ -1,3 +1,4 @@
+import { ConversationRepository } from '#app/modules/messaging/repository/conversation.repository';
 import { jest } from '@jest/globals';
 import { type INestApplication } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -34,6 +35,8 @@ describe('Authentication (HTTP, with a mocked repository)', () => {
     else process.env.JWT_SECRET = previousSecret;
 
     const module = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider(ConversationRepository)
+      .useValue({})
       .overrideProvider(PrismaService)
       .useValue({})
       .overrideProvider(UserRepository)

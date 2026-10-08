@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppException } from '#app/libs/exceptions/app.exception';
 import { ErrorCode } from '#app/libs/exceptions/error-code';
 import type { CreateUserInput, UserEntity } from './entities/user.entity.js';
@@ -8,6 +8,16 @@ import { UserRepository } from './repository/user.repository.js';
 @Injectable()
 export class UsersService {
   constructor(private readonly users: UserRepository) {}
+
+  async getUserProfile(id: string) {
+    const user = await this.users.findActiveById(id);
+
+    if (!user) {
+      throw new NotFoundException('User not found or has been deactivated');
+    }
+
+    return user;
+  }
 
   findByEmail(email: string): Promise<UserEntity | null> {
     return this.users.findByEmail(email.trim().toLowerCase());

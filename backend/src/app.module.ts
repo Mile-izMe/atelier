@@ -1,4 +1,5 @@
 import { AuthModule } from '#app/modules/auth/auth.module';
+import { MessagingModule } from '#app/modules/messaging/messaging.module';
 import { LogLevel } from '#app/libs/logger/enums/logger.enum';
 import { LoggerModule } from '#app/libs/logger/logger.module';
 import { HealthModule } from '#app/modules/health/health.module';
@@ -30,6 +31,7 @@ import { RequestContextMiddleware } from './libs/request-context/request-context
     // Module
     HealthModule,
     AuthModule,
+    MessagingModule,
   ],
   providers: [
     { provide: APP_PIPE, useClass: ApiValidationPipe },

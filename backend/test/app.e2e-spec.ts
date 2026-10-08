@@ -1,3 +1,4 @@
+import { ConversationRepository } from '#app/modules/messaging/repository/conversation.repository';
 import { jest } from '@jest/globals';
 import { PrismaService } from '#app/prisma/prisma.service';
 import { UserRepository } from '#app/modules/user/repository/user.repository';
@@ -127,6 +128,8 @@ describe('Global HTTP responses (e2e)', () => {
       imports: [AppModule],
       controllers: [ResponseTestController],
     })
+      .overrideProvider(ConversationRepository)
+      .useValue({})
       .overrideProvider(PrismaService)
       .useValue({})
       .overrideProvider(UserRepository)
