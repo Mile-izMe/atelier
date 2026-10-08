@@ -1,4 +1,5 @@
 import { AuthModule } from '#app/modules/auth/auth.module';
+import { UserHttpModule } from '#app/modules/user/user-http.module';
 import { MessagingModule } from '#app/modules/messaging/messaging.module';
 import { LogLevel } from '#app/libs/logger/enums/logger.enum';
 import { LoggerModule } from '#app/libs/logger/logger.module';
@@ -31,6 +32,7 @@ import { RequestContextMiddleware } from './libs/request-context/request-context
     // Module
     HealthModule,
     AuthModule,
+    UserHttpModule,
     MessagingModule,
   ],
   providers: [

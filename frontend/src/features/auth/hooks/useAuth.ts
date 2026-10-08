@@ -33,7 +33,7 @@ export function useRegister() {
   });
 }
 
-// The current profile comes from login; BE has no /users/me endpoint yet.
+// This hook reads the login profile; authApi.getProfile() fetches the latest server profile.
 export function useProfile() {
   return useAuthStore((state) => state.user);
 }

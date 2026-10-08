@@ -29,5 +29,12 @@ export const authApi = {
       },
     }),
 
+  getProfile: (): Promise<UserType> =>
+    requestData<UserType>({
+      method: "GET",
+      url: "/users/me",
+      requiresAuth: true,
+    }),
+
   logout: logoutSession,
 };

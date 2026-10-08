@@ -150,6 +150,16 @@ describe("Frontend/backend API contract", () => {
     expect(await conversationApi.get(conversation.id)).toEqual(conversation);
   });
 
+  it("loads the current profile from the guarded backend endpoint", async () => {
+    store.getState().setAuth(session);
+    client.api.defaults.adapter = async (config) => {
+      expect(config.url).toBe("/users/me");
+      expect(config.headers.get("Authorization")).toBe("Bearer token-a");
+      return response(config, envelope(user));
+    };
+    expect(await authApi.getProfile()).toEqual(user);
+  });
+
   it("blocks a protected request with no token before dispatch", async () => {
     const adapter = vi.fn();
     client.api.defaults.adapter = adapter;
@@ -301,13 +311,11 @@ describe("Session changes while requests are in flight", () => {
       errorCode: "SESSION_CHANGED",
     });
     await dispatched;
-    store
-      .getState()
-      .setAuth({
-        ...session,
-        accessToken: "token-b",
-        user: { ...user, id: conversation.id },
-      });
+    store.getState().setAuth({
+      ...session,
+      accessToken: "token-b",
+      user: { ...user, id: conversation.id },
+    });
     fail();
     await assertion;
     expect(store.getState().accessToken).toBe("token-b");

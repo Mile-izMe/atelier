@@ -144,6 +144,111 @@ describe('Guarded messaging routes (HTTP, mocked repositories)', () => {
     await app?.close();
   });
 
+  it('returns the current database profile with public fields and ignores a query userId', async () => {
+    accounts.set(userA, {
+      ...accounts.get(userA)!,
+      role: 'ADMIN',
+      username: 'alice',
+    });
+    const response = await request(app.getHttpServer())
+      .get('/users/me')
+      .query({ userId: userB })
+      .set('Authorization', 'Bearer ' + token)
+      .expect(200);
+    expect(users.findActiveById).toHaveBeenCalledTimes(1);
+    expect(users.findActiveById).toHaveBeenCalledWith(userA);
+    expect(response.headers['cache-control']).toBe('no-store');
+    expect(response.body).toMatchObject({
+      success: true,
+      message: 'Profile loaded',
+      traceId: response.headers['x-trace-id'],
+      data: {
+        id: userA,
+        email: userA + '@example.com',
+        username: 'alice',
+        role: 'ADMIN',
+        createdAt: ai.createdAt,
+        updatedAt: ai.updatedAt,
+      },
+    });
+    const body = response.body as { data: Record<string, unknown> };
+    expect(Object.keys(body.data).sort()).toEqual(
+      ['id', 'email', 'username', 'role', 'createdAt', 'updatedAt'].sort(),
+    );
+    expect(response.text).not.toContain('private-password-hash');
+  });
+
+  it.each(['missing-token', 'invalid-token', 'expired-token', 'deleted-user'])(
+    'rejects GET /users/me for %s',
+    async (scenario) => {
+      let header: string | undefined = 'Bearer ' + token;
+      if (scenario === 'missing-token') header = undefined;
+      if (scenario === 'invalid-token') header = 'Bearer invalid-token';
+      if (scenario === 'expired-token') {
+        header =
+          'Bearer ' + (await jwt.signAsync({ sub: userA }, { expiresIn: -1 }));
+      }
+      if (scenario === 'deleted-user') {
+        accounts.set(userA, {
+          ...accounts.get(userA)!,
+          deletedAt: ai.createdAt,
+        });
+      }
+      const pending = request(app.getHttpServer()).get('/users/me');
+      if (header) pending.set('Authorization', header);
+      const response = await pending.expect(401);
+      expect(response.body).toMatchObject({ success: false, statusCode: 401 });
+      expect(response.body).not.toHaveProperty('data');
+    },
+  );
+
+  it('masks an account lookup failure on GET /users/me', async () => {
+    users.findActiveById.mockRejectedValue(
+      new Error('private profile database detail'),
+    );
+    const response = await request(app.getHttpServer())
+      .get('/users/me')
+      .set('Authorization', 'Bearer ' + token)
+      .expect(500);
+    expect(response.body).toMatchObject({
+      success: false,
+      errorCode: 'SYS-500',
+    });
+    expect(response.text).not.toContain('private profile database detail');
+  });
+
+  it('documents GET /users/me as a protected public user response', () => {
+    const document = SwaggerModule.createDocument(
+      app,
+      new DocumentBuilder().addBearerAuth().build(),
+    );
+    const get = document.paths['/users/me'].get;
+    expect(get?.security).toEqual([{ bearer: [] }]);
+    expect(get?.responses['401']).toBeDefined();
+    expect(get?.responses['200']).toMatchObject({
+      content: {
+        'application/json': {
+          schema: {
+            allOf: [
+              { $ref: '#/components/schemas/ApiSuccessResponse' },
+              {
+                properties: {
+                  data: { $ref: '#/components/schemas/UserResponseDto' },
+                },
+              },
+            ],
+          },
+        },
+      },
+    });
+    expect(document.components?.schemas?.UserResponseDto).toMatchObject({
+      properties: {
+        id: expect.any(Object) as unknown,
+        email: expect.any(Object) as unknown,
+      },
+    });
+  });
+
   it('creates an AI chat using the authenticated user ID and the standard envelope', async () => {
     const response = await request(app.getHttpServer())
       .post('/messaging/conversations')

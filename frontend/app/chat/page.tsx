@@ -1,5 +1,5 @@
+import { ChatWorkspace } from "@/src/features";
 import type { Metadata } from "next";
-import { ChatPage } from "@/src/features/chat/components/ChatPage";
 
 export const metadata: Metadata = {
   title: "Không gian trò chuyện | Atelier",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ChatPage />;
+  return <ChatWorkspace />;
 }

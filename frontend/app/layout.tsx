@@ -1,9 +1,8 @@
+import { CustomToast, NavBar } from "@/components/layouts";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
-import { themeScript } from "@/src/shared/lib/theme";
-import { CustomToast, NavBar } from "@/components/layouts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,12 +25,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
+      {/* <head>
         <script
           id="atelier-theme"
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
-      </head>
+      </head> */}
       <body className="min-h-full flex flex-col">
         <Providers>
           <NavBar />

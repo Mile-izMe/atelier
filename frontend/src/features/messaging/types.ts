@@ -1,3 +1,5 @@
+export type ChatSection = "atelier" | "chatbot" | "guild";
+
 export type ConversationType = "CHANNEL" | "DIRECT" | "AI";
 
 export interface CreateConversationInput {
